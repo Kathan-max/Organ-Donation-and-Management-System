@@ -1,0 +1,268 @@
+------------------------------------------------Log Triggers------------------------------------------------
+create trigger ADD_DONOR_LOG
+after insert
+on Donor
+for each row
+begin
+insert into log values
+(now(), concat("Inserted new Donor", cast(new.Donor_Id as char)));
+end //
+
+
+create trigger UPD_DONOR_LOG
+after update
+on Donor
+for each row
+begin
+insert into log values
+(now(), concat("Updated Donor Details", cast(new.Donor_Id as char)));
+end //
+
+
+
+create trigger DEL_DONOR_LOG
+after delete
+on Donor
+for each row
+begin
+insert into log values
+(now(), concat("Deleted Donor ", cast(old.Donor_Id as char)));
+end //
+
+
+create trigger ADD_PATIENT_LOG
+after insert
+on Patient
+for each row
+begin
+insert into log values
+(now(), concat("Inserted new Patient ", cast(new.Patient_Id as char)));
+end //
+
+
+create trigger UPD_PATIENT_LOG
+after update
+on Patient
+for each row
+begin
+insert into log values
+(now(), concat("Updated Patient Details ", cast(new.Patient_Id as char)));
+end //
+
+create trigger DEL_PATIENT_LOG
+after delete
+on Donor
+for each row
+begin
+insert into log values
+(now(), concat("Deleted Patient ", cast(old.Donor_Id as char)));
+end //
+
+
+
+create trigger ADD_TRASACTION_LOG
+after insert
+on Transaction
+for each row
+begin
+insert into log values
+(now(), concat("Added Transaction :: Patient ID : ", cast(new.Patient_ID as char), "; Donor ID : " ,cast(new.Donor_ID as char)));
+end //
+
+
+
+
+------------------------------------------------Remove Procedure Triggers------------------------------------------------
+
+
+
+-- Procedure to remove Data from User 
+delimiter //
+CREATE procedure remove_User( IN User_I_D int)
+BEGIN
+	delete from User where User_ID = User_I_D;
+end; //
+-- Remove Data from Child of User 
+delimiter //
+create trigger User_remov_Child before delete on User
+for each row
+begin
+	delete from User_phone_no where User_ID = old.User_ID;
+    delete from Donor where User_ID = old.User_ID;
+    delete from Patient where User_ID = old.User_ID;
+end //
+
+
+
+-- Procedure to remove Patient
+delimiter //
+CREATE procedure remove_Patient(IN Patient_I_D int, IN organ_required varchar(20)) 
+begin
+	delete from Patient where Patient_ID = Patient_I_D and organ_req = Organ_required;
+end //
+call remove_Patient(5,'Heart');
+select* from Patient;
+
+
+-- Procedure to remove Donor
+delimiter //
+CREATE procedure remove_Donor(IN Donor_I_D int, IN Organ_Dona varchar(20))
+begin
+	delete from Donor where Donor_ID = Donor_I_D and Organ_donated = Organ_Dona;
+end //
+
+delimiter //
+create trigger Donor_remove_Child before delete on Donor
+for each row
+begin
+	delete from Organ_available where old.Organ_ID = organ_id;
+end //
+
+
+
+-- Procedure to remove Doctor
+delimiter //
+CREATE procedure remove_Doctor (IN Doctor_I_D int)
+begin
+	delete from doctor where Doctor_ID = Doctor_I_D;
+end //
+
+
+
+
+-- Procedure to remove Organization
+delimiter //
+CREATE procedure remove_Organization(IN o_id int)
+begin
+	delete from Organization where Organization_ID = o_id;
+end //
+
+-- Trigger to remove data from child of Organization
+delimiter //
+CREATE trigger remove_Organization_child before delete on organization
+for each row
+begin
+	delete from Organization_Head where Organization_ID = old.organization_ID;
+	delete from Organization_Phone_no where Organization_ID = old.organization_ID;
+    delete from Donor where Organization_ID = old.organization_ID;
+	delete from Doctor where Organization_ID = old.organization_ID;
+end //
+
+
+
+-- Procedure to remove Organization Head
+delimiter //
+CREATE procedure remove_Organization_Head(IN O_Id int, IN E_ID int)
+begin
+	delete from Organization_Head where Organization_ID = O_Id and Employee_ID = E_ID;
+end //
+
+
+
+
+------------------------------------------------Error Triggers------------------------------------------------
+
+
+delimiter //
+create trigger Doctor_error
+after insert
+on Doctor
+for each row
+begin
+    if not exists(select Organization_ID from Organization where Organization_ID=new.Organization_ID) then
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Organization ID does not Exits in organization';
+
+     end if;
+ end //
+
+
+delimiter // 
+create trigger organ_error
+after insert
+on Organ_available
+for each row
+begin
+    if not exists(select Donor_ID from Donor where Donor_ID=new.Donor_ID) then
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Donor_ID ID does not Exits in Donor';
+
+     end if;
+ end //
+
+
+delimiter //
+create trigger Donor_error
+after insert
+on Donor
+for each row
+begin
+    if (not exists(select User_ID from User where User_ID=new.User_ID)) then
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'User_ID ID does not Exits in User';
+    elseif  (not exists(select organization_ID from Organization where organization_ID=new.organization_ID)) then
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'organization_ID ID does not Exits in organization';
+     end if;
+end //
+
+
+delimiter //
+create trigger patient_error
+after insert
+on Patient
+for each row
+begin
+    if (not exists(select User_ID from User where User_ID=new.User_ID) ) then
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Donor_ID ID dose not Exits in Donor';
+    elseif (not exists(select Doctor_ID from Doctor where Doctor_ID=new.Doctor_ID)) then
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Doctor_ID ID dose not Exits in Doctor';
+     end if;
+end //
+
+
+
+delimiter //
+create trigger Organization_head_error
+after insert
+on Organization
+for each row
+begin
+    if not exists(select organization_ID from Organization where organization_ID=new.organization_ID) then
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'organization_ID ID is not Exits in organization ';
+
+     end if;
+ end //
+
+
+delimiter //
+create trigger Transaction_erro
+after insert
+on Transaction
+for each row
+begin
+    if (not exists(select Patient_ID from Patient where Patient_ID=new.Patient_ID)) then
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Patient_ID ID does not Exits in Patient';
+    elseif not exists(select Donor_ID from Donor where Donor_ID=new.Donor_ID) then
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Donor_ID ID does Exits in Donor';
+     end if;
+end; 
+
+
+
+
+------------------------------------------------Different Triggers------------------------------------------------
+
+DELIMITER \\
+create TRIGGER ADD_Organ_avab after insert
+on Donor for each row
+begin
+	insert into Organ_available(Donor_ID, organ_Name, Organ_ID) values(NEW.Donor_ID, NEW.organ_donated, NEW.Organ_ID);
+end;
+
+
+DELIMITER \\
+create TRIGGER remove_Organ after INSERT
+on Transaction for each row
+begin
+	delete from Organ_available where new.Organ_ID = Organ_ID;
+    delete from Donor where new.Donor_ID = Donor_ID;
+    delete from patient where new.Patient_ID = Patient_ID;
+end;
+

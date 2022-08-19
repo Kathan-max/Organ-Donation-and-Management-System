@@ -1,0 +1,82 @@
+<!doctype HTML>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<html>
+    <title>Details</title>
+    <style>
+        :root{
+            --clr-neutral-900: hsl(207,19%,9%);
+            --clr-neutral-800: rgb(40, 44, 47);
+            --clr-neutral-100: hsl(0,0%,100%);
+            --clr-accent-400: hsl(169, 95%, 61%);
+        }
+          *{
+            background-color: var(--clr-neutral-900) !important;
+          }
+          .m1{
+              color: white !important;
+          }
+          h1,h3{
+            background-color: var(--clr-neutral-800) !important;
+            color: var(--clr-accent-400) !important;
+            font-weight: lighter !important;
+          }
+          .back_1{
+              background-color: var(--clr-neutral-900) !important;
+          }
+          .head-1{
+            background-color: var(--clr-neutral-800) !important;
+            border-radius: 0% !important;
+          }
+          strong{
+              color: var(--clr-accent-400) !important;
+          }
+          button{
+              color: var(--clr-accent-400) !important;
+              border: 0.0015pc solid var(--clr-accent-400) !important;
+          }
+          .test{
+            text-align: center;
+          }
+    </style>
+    <body>
+        <nav class="navbar navbar-dark bg-dark justify-content-between">
+            <form action = "/home">
+                <button style = "border: 0px solid transparent;" class = "btn btn-outline-primary">HOME</button>
+            </form>
+            <form class="form-inline" action = "/logout">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
+            </form>
+        </nav>
+        <div class="jumbotron head-1">
+            <center><h1 class="display-4">Insert the Data</h1></center>
+          </div>
+        {% if error == 'True' %}
+               
+            <center><h1>Data is not present in Partent Table</h1></center>>
+            
+        {% endif %}
+
+        {% if success == 'True' %}
+        <center><h3 class="display-4">Successfully Added {{id.capitalize()}}</h3></center> 
+        {% endif %}
+
+        <form class="m1" action = {{"/add_%s"%id}} method = 'POST'>
+            <table class = "table table-striped table-sm">
+                    {% for i in range(0,fields | length) %}
+                        <tr>
+                            <th scope="row">{{fields[i]}}</th>
+                            <td>
+                                <input class = "form-control m1"  name = "{{fields[i]}}">
+                            </td>
+                        </tr>
+                    {%endfor%}
+            </table>
+            <center><button class = "btn btn-success" type="submit">Add {{id.capitalize()}}</button></center>
+        </form>
+    </body>
+</html>

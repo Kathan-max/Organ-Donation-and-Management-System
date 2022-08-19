@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+ crossorigin="anonymous">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<html>
+	<style>
+		:root{
+			--clr-neutral-900: hsl(207,19%,9%);
+			--clr-neutral-800: rgb(40, 44, 47);
+			--clr-neutral-100: hsl(0,0%,100%);
+			--clr-accent-400: hsl(169, 95%, 61%);
+			--clr-accent-500: hsl(180, 100%, 50%);
+		}
+		  *{
+			background-color: var(--clr-neutral-900) !important;
+		  }
+		
+		table {
+			font-family: arial, sans-serif;
+			border-collapse: collapse;
+			width: 100%;
+			color: white !important;
+		}
+		
+		td, th {
+			border: 1px solid #dddddd;
+			text-align: left;
+			padding: 8px;
+		}
+		
+		tr:nth-child(even) {
+			background-color: #dddddd;
+		}
+		.head-1{
+			background-color: var(--clr-neutral-800) !important;
+			border-radius: 0% !important;
+		  }
+		  h1{
+			background-color: var(--clr-neutral-800) !important;
+			color: var(--clr-accent-400) !important;
+			font-weight: lighter !important;
+		  }
+		  strong{
+			color: var(--clr-accent-400) !important;
+		}
+		button{
+			color : var(--clr-accent-400) !important;
+		}
+		p,label{
+            color: var(--clr-accent-400) !important;
+            font-weight: lighter !important;
+          }
+		.back-cls{
+			background-color: var(--clr-neutral-900) !important;
+		}
+		input{
+			color: var(--clr-accent-500) !important;
+		}
+	</style>
+<head>
+	<title>Delete Organization</title>
+</head>
+
+<body>
+	<nav class="navbar navbar-dark bg-dark justify-content-between">
+        <form action="/home">
+            <button style="border: 0px solid transparent;" class="btn btn-outline-primary back-cls">HOME</button>
+        </form>
+        <form class="form-inline" action="/logout">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
+        </form>
+    </nav>
+	<div class="jumbotron head-1">
+        <center><h1 class="display-4">Remove Organization</h1></center>
+    </div>
+	<form action="/del_organization" method="POST" class="container">
+		<div class="form-group">
+			<label>Organization ID</label>
+			<input type="number" name="Organization_ID" class="form-control">
+		</div>
+		<button class="btn btn-primary" type="submit" style="width:24%;" name="delete">Delete Organization</button>
+	</form>
+</body>
+
+</html>
